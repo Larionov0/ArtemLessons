@@ -29,12 +29,46 @@ class Sprite:
         pass
 
 
-class Hero(Sprite):
-    def __init__(self, name, speed, x, y, color=BLUE, radius=15):
+class Creature(Sprite):
+    def __init__(self, x, y, speed, hp=20, radius=20):
+        self.x = x
+        self.y = y
+        self.hp = self.max_hp = hp
+        self.speed = speed
+        self.radius = radius
+
+    def draw_hp_bar(self, screen, camera):
+        big_bar_height = 5
+        small_bar_height = big_bar_height - 2
+        bar_width = self.radius * 2
+
+        bot_center = [self.x, self.y - self.radius - 2]
+        big_left_up = [bot_center[0] - self.radius, bot_center[1] - big_bar_height]
+
+        small_left_up = [big_left_up[0], big_left_up[1] + 1]
+        k = self.hp / self.max_hp
+        small_width = bar_width * k
+
+        local_big_left_up = camera.calc_coords(big_left_up)
+        local_small_left_up = camera.calc_coords(small_left_up)
+
+        pygame.draw.rect(screen, BLACK, (local_big_left_up[0], local_big_left_up[1], bar_width, big_bar_height))
+        pygame.draw.rect(screen, GREEN, (local_small_left_up[0], local_small_left_up[1], small_width, small_bar_height))
+
+    def get_damage(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def die(self, *args, **kwargs):
+        raise NotImplementedError
+
+
+class Hero(Creature):
+    def __init__(self, name, speed, x, y, hp=50, color=BLUE, radius=15):
         self.name = name
         self.speed = speed
         self.x = x
         self.y = y
+        self.hp = self.max_hp = hp
         self.color = color
         self.radius = radius
 
@@ -50,17 +84,31 @@ class Hero(Sprite):
 
     def shoot(self, x, y, bullets):
         vector = [x - hero.x, y - hero.y]
-        bullet = Bullet.spawn(self.x, self.y, vector, 10)
+        bullet = Bullet.spawn(self.x, self.y, vector, 10, damage=4)
         bullets.append(bullet)
 
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)
+        self.draw_hp_bar(screen, camera)
+
+    def get_damage(self, damage):
+        self.hp -= damage
+        if self.hp <= 0:
+            self.die()
+
+    def die(self):
+        print('You loose')
+        exit()
 
 
-class Enemy(Sprite):
-    def __init__(self, x, y, speed, vision_range=200, radius=20, color=RED):
+class Enemy(Creature):
+    last_spawn_time = time.time()
+    respawn_seconds = 4
+
+    def __init__(self, x, y, speed, hp=20, vision_range=200, radius=20, color=RED):
         self.x = x
         self.y = y
+        self.hp = self.max_hp = hp
         self.speed = speed
         self.radius = radius
         self.color = color
@@ -95,6 +143,7 @@ class Enemy(Sprite):
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.vision_range, width=1)
+        self.draw_hp_bar(screen, camera)
 
     @classmethod
     def spawn_random(cls):
@@ -103,23 +152,35 @@ class Enemy(Sprite):
                    radius=random.randint(15, 25),
                    color=(random.randint(200, 255), random.randint(0, 100), random.randint(0, 100)))
 
+    def get_damage(self, damage, enemies):
+        self.hp -= damage
+        if self.hp <= 0:
+            self.die(enemies)
+
     def die(self, enemies):
         enemies.remove(self)
 
+    @classmethod
+    def check_spawn(cls, enemies):
+        if time.time() - cls.last_spawn_time > cls.respawn_seconds:
+            enemies.append(cls.spawn_random())
+            cls.last_spawn_time = time.time()
+
 
 class Bullet(Sprite):
-    def __init__(self, x, y, speed, vector, color=BLACK, radius=3):
+    def __init__(self, x, y, speed, vector, damage=5, color=BLACK, radius=3):
         self.x = x
         self.y = y
         self.speed = speed
         self.color = color
         self.radius = radius
         self.vector = vector
+        self.damage = damage
 
     @classmethod
-    def spawn(cls, x, y, start_vector, speed):
+    def spawn(cls, x, y, start_vector, speed, damage=None):
         length = get_vector_length(start_vector)
-        return cls(x, y, speed, [start_vector[0] * speed / length, start_vector[1] * speed / length])
+        return cls(x, y, speed, [start_vector[0] * speed / length, start_vector[1] * speed / length], damage)
 
     def update(self, keys, enemies, hero):
         self.x += self.vector[0]
@@ -127,9 +188,12 @@ class Bullet(Sprite):
 
         for enemy in enemies:
             if distance([enemy.x, enemy.y], [self.x, self.y]) < enemy.radius + self.radius:
-                enemy.die(enemies)
-                bullets.remove(self)
+                self.hit(enemy, enemies)
                 break
+
+    def hit(self, enemy, enemies):
+        enemy.get_damage(self.damage, enemies)
+        bullets.remove(self)
 
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)
@@ -215,6 +279,8 @@ while True:
 
     for obj in rocks + enemies + bullets + [hero]:
         obj.draw(screen, camera)
+
+    Enemy.check_spawn(enemies)
 
     pygame.display.flip()
 
