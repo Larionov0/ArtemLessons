@@ -15,13 +15,22 @@ class Enemy(Creature):
         super().__init__(x, y, speed, hp, radius)
         self.color = color
         self.vision_range = vision_range
+        self.time_after_hit = 0.5
 
         self.patrol_vector = None
         self.patrol_vector_time = time.time()
+        self.last_hit_time = time.time()
 
     def update(self, keys, world):
+        if time.time() - self.last_hit_time < self.time_after_hit:
+            return
+
         hero = world.hero
         if distance([self.x, self.y], [hero.x, hero.y]) < self.vision_range:
+            if distance([self.x, self.y], [hero.x, hero.y]) < self.radius + hero.radius:
+                hero.get_damage(10)
+                self.last_hit_time = time.time()
+
             vector = [hero.x - self.x, hero.y - self.y]
             vector_length = get_vector_length(vector)
 

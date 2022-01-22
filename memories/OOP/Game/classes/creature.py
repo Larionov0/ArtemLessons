@@ -18,23 +18,24 @@ class Creature(Sprite):
         self.speed = speed
         self.radius = radius
 
-    def draw_hp_bar(self, screen, camera):
-        big_bar_height = 5
+    def draw_bar(self, screen, camera, big_bar_height, bar_width, otstup=2, value=9, max_value=10, back_color=BLACK, front_color=GREEN):
         small_bar_height = big_bar_height - 2
-        bar_width = self.radius * 2
 
-        bot_center = [self.x, self.y - self.radius - 2]
-        big_left_up = [bot_center[0] - self.radius, bot_center[1] - big_bar_height]
+        bot_center = [self.x, self.y - self.radius - otstup]
+        big_left_up = [bot_center[0] - bar_width / 2, bot_center[1] - big_bar_height]
 
         small_left_up = [big_left_up[0], big_left_up[1] + 1]
-        k = self.hp / self.max_hp
+        k = value / max_value
         small_width = bar_width * k
 
         local_big_left_up = camera.calc_coords(big_left_up)
         local_small_left_up = camera.calc_coords(small_left_up)
 
-        pygame.draw.rect(screen, BLACK, (local_big_left_up[0], local_big_left_up[1], bar_width, big_bar_height))
-        pygame.draw.rect(screen, GREEN, (local_small_left_up[0], local_small_left_up[1], small_width, small_bar_height))
+        pygame.draw.rect(screen, back_color, (local_big_left_up[0], local_big_left_up[1], bar_width, big_bar_height))
+        pygame.draw.rect(screen, front_color, (local_small_left_up[0], local_small_left_up[1], small_width, small_bar_height))
+
+    def draw_hp_bar(self, screen, camera):
+        self.draw_bar(screen, camera, 5, self.radius * 2, 2, self.hp, self.max_hp)
 
     def get_damage(self, *args, **kwargs):
         raise NotImplementedError

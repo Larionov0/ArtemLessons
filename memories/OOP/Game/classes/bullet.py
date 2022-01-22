@@ -2,6 +2,7 @@ from classes.creature import Sprite
 from tools.math_ops import *
 from colors import *
 from settings import pygame
+import time
 
 
 class Bullet(Sprite):
@@ -13,6 +14,8 @@ class Bullet(Sprite):
         self.radius = radius
         self.vector = vector
         self.damage = damage
+        self.start_time = time.time()
+        self.life_time = 8
 
     @classmethod
     def spawn(cls, x, y, start_vector, speed, damage=None):
@@ -20,13 +23,19 @@ class Bullet(Sprite):
         return cls(x, y, speed, [start_vector[0] * speed / length, start_vector[1] * speed / length], damage)
 
     def update(self, keys, world):
+        if time.time() - self.start_time > self.life_time:
+            world.bullets.remove(self)
+
         x, y = self.x, self.y
         x += self.vector[0]
         y += self.vector[1]
 
         for rock in world.rocks:
             if distance([x, y], [rock.x, rock.y]) < rock.radius + self.radius:
-                world.bullets.remove(self)
+                try:
+                    world.bullets.remove(self)
+                except:
+                    pass
                 return
 
         self.x = x

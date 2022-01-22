@@ -3,6 +3,8 @@ from colors import *
 from tools.math_ops import *
 from settings import pygame
 from classes.bullet import Bullet
+from classes.weapons.weapon import Weapon, Drobash
+import time
 
 
 class Hero(Creature):
@@ -10,6 +12,7 @@ class Hero(Creature):
         super().__init__(x, y, speed, hp, radius)
         self.name = name
         self.color = color
+        self.weapon = Drobash(self)
 
     def update(self, keys, world):
         x, y = self.x, self.y
@@ -33,13 +36,18 @@ class Hero(Creature):
             self.y = y
 
     def shoot(self, x, y, bullets):
-        vector = [x - self.x, y - self.y]
-        bullet = Bullet.spawn(self.x, self.y, vector, 10, damage=4)
-        bullets.append(bullet)
+        self.weapon.shoot(x, y, bullets)
 
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)
         self.draw_hp_bar(screen, camera)
+        self.draw_reload_bar(screen, camera)
+
+    def draw_reload_bar(self, screen, camera):
+        proshlo = time.time() - self.weapon.last_shoot_time
+        if proshlo > self.weapon.recharge_time:
+            proshlo = self.weapon.recharge_time
+        self.draw_bar(screen, camera, 5, self.radius*2 - 4, 8, proshlo, self.weapon.recharge_time, front_color=RED)
 
     def get_damage(self, damage):
         self.hp -= damage
