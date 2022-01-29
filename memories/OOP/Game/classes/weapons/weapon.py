@@ -31,7 +31,7 @@ class Drobash(Weapon):
             if time.time() - self.last_shoot_time >= self.recharge_time:
                 vector = [x - self.hero.x, y - self.hero.y]
                 for _ in range(5):
-                    random_vector = [vector[0] + random.randint(-1000, 1000) / 10, vector[1] + random.randint(-1000, 1000) / 10]
+                    random_vector = [vector[0] + random.randint(-500, 500) / 10, vector[1] + random.randint(-500, 500) / 10]
                     bullet = Bullet.spawn(self.hero.x, self.hero.y, random_vector, 10, damage=4)
                     bullets.append(bullet)
 

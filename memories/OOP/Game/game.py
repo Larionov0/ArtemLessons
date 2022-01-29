@@ -20,6 +20,7 @@ class World:
         self.enemies.append(Rabbit(300, 300, 4, 10))
         self.rocks = Rock.generate_many_rocks()
         self.bullets = []
+        self.loot = []
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -38,12 +39,12 @@ class World:
 
             keys = pygame.key.get_pressed()
 
-            for obj in self.enemies + self.bullets + self.rocks + [self.hero]:
+            for obj in self.loot + self.enemies + self.bullets + self.rocks + [self.hero]:
                 obj.update(keys, self)
 
             self.screen.fill(WHITE)
 
-            for obj in self.rocks + self.enemies + self.bullets + [self.hero]:
+            for obj in self.loot + self.rocks + self.enemies + self.bullets + [self.hero]:
                 obj.draw(self.screen, self.camera)
 
             Enemy.check_spawn(self.enemies)

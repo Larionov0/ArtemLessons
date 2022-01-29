@@ -43,12 +43,12 @@ class Bullet(Sprite):
 
         for enemy in world.enemies:
             if distance([enemy.x, enemy.y], [self.x, self.y]) < enemy.radius + self.radius:
-                self.hit(enemy, world.enemies, world.bullets)
+                self.hit(enemy, world)
                 break
 
-    def hit(self, enemy, enemies, bullets):
-        enemy.get_damage(self.damage, enemies)
-        bullets.remove(self)
+    def hit(self, enemy, world):
+        enemy.get_damage(self.damage, world)
+        world.bullets.remove(self)
 
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)

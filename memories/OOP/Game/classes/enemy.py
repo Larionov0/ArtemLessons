@@ -5,6 +5,8 @@ import random
 from settings import WIDTH, HEIGHT
 from tools.math_ops import *
 from settings import pygame
+from classes.loot.loot import Loot
+from classes.loot.loot_types import *
 
 
 class Enemy(Creature):
@@ -28,7 +30,7 @@ class Enemy(Creature):
         hero = world.hero
         if distance([self.x, self.y], [hero.x, hero.y]) < self.vision_range:
             if distance([self.x, self.y], [hero.x, hero.y]) < self.radius + hero.radius:
-                hero.get_damage(10)
+                hero.get_damage(10, world)
                 self.last_hit_time = time.time()
 
             vector = [hero.x - self.x, hero.y - self.y]
@@ -67,13 +69,14 @@ class Enemy(Creature):
                    radius=random.randint(15, 25),
                    color=(random.randint(200, 255), random.randint(0, 100), random.randint(0, 100)))
 
-    def get_damage(self, damage, enemies):
+    def get_damage(self, damage, world):
         self.hp -= damage
         if self.hp <= 0:
-            self.die(enemies)
+            self.die(world)
 
-    def die(self, enemies):
-        enemies.remove(self)
+    def die(self, world):
+        world.loot.append(Loot.spawn_in_random_dir(self.x, self.y, GOLD, random.randint(5, 10)))
+        world.enemies.remove(self)
 
     @classmethod
     def check_spawn(cls, enemies):

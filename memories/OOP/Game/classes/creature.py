@@ -3,6 +3,12 @@ from colors import *
 
 
 class Sprite:
+    def __init__(self, x, y, speed, radius=20):
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.radius = radius
+
     def update(self, keys, world):
         pass
 
@@ -12,11 +18,8 @@ class Sprite:
 
 class Creature(Sprite):
     def __init__(self, x, y, speed, hp=20, radius=20):
-        self.x = x
-        self.y = y
+        super().__init__(x, y, speed, radius)
         self.hp = self.max_hp = hp
-        self.speed = speed
-        self.radius = radius
 
     def draw_bar(self, screen, camera, big_bar_height, bar_width, otstup=2, value=9, max_value=10, back_color=BLACK, front_color=GREEN):
         small_bar_height = big_bar_height - 2
@@ -37,7 +40,7 @@ class Creature(Sprite):
     def draw_hp_bar(self, screen, camera):
         self.draw_bar(screen, camera, 5, self.radius * 2, 2, self.hp, self.max_hp)
 
-    def get_damage(self, *args, **kwargs):
+    def get_damage(self, damage, world):
         raise NotImplementedError
 
     def die(self, *args, **kwargs):

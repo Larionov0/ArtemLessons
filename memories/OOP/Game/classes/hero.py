@@ -4,6 +4,7 @@ from tools.math_ops import *
 from settings import pygame
 from classes.bullet import Bullet
 from classes.weapons.weapon import Weapon, Drobash
+import classes.loot.loot_types as loot_types
 import time
 
 
@@ -13,6 +14,7 @@ class Hero(Creature):
         self.name = name
         self.color = color
         self.weapon = Drobash(self)
+        self.gold = 50
 
     def update(self, keys, world):
         x, y = self.x, self.y
@@ -35,6 +37,13 @@ class Hero(Creature):
             self.x = x
             self.y = y
 
+        for loot in world.loot:
+            if distance([self.x, self.y], [loot.x, loot.y]) < self.radius + loot.radius:
+                if loot.type == loot_types.GOLD:
+                    self.gold += loot.amount
+                    loot.destroy(world)
+                    print(self.gold)
+
     def shoot(self, x, y, bullets):
         self.weapon.shoot(x, y, bullets)
 
@@ -49,7 +58,7 @@ class Hero(Creature):
             proshlo = self.weapon.recharge_time
         self.draw_bar(screen, camera, 5, self.radius*2 - 4, 8, proshlo, self.weapon.recharge_time, front_color=RED)
 
-    def get_damage(self, damage):
+    def get_damage(self, damage, world):
         self.hp -= damage
         if self.hp <= 0:
             self.die()
