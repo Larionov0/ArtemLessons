@@ -1,4 +1,4 @@
-from classes.enemy import Enemy
+from classes.creatures.enemy import Enemy
 from colors import *
 from tools.math_ops import *
 

@@ -1,4 +1,4 @@
-from classes.creature import Sprite
+from classes.creatures.creature import Sprite
 from tools.math_ops import *
 from colors import *
 from settings import pygame

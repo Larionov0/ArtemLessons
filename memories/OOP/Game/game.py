@@ -1,20 +1,20 @@
 import pygame
-import time
-import random
 from colors import *
-from classes.hero import Hero
-from classes.enemy import Enemy
-from classes.rabbit import Rabbit
+from classes.creatures.hero import Hero
+from classes.creatures.enemy import Enemy
+from classes.creatures.rabbit import Rabbit
 from classes.camera import Camera
-from classes.rock import Rock
+from classes.creatures.rock import Rock
 from settings import WIDTH, HEIGHT
+from classes.player_interface import PlayerInterface
+from classes.creatures.store import Store
 
 pygame.init()
 
 
 class World:
     def __init__(self):
-        self.hero = Hero('Bob', 5, 400, 400)
+        self.hero = Hero('Bob', 5, 150, 150)
         self.camera = Camera(hero=self.hero, width=WIDTH, height=HEIGHT)
         self.enemies = [Enemy.spawn_random() for _ in range(5)]
         self.enemies.append(Rabbit(300, 300, 4, 10))
@@ -23,6 +23,8 @@ class World:
         self.loot = []
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.interface = PlayerInterface(self)
+        self.stores = [Store(100, 100)]
 
     def run(self):
         while True:
@@ -44,8 +46,10 @@ class World:
 
             self.screen.fill(WHITE)
 
-            for obj in self.loot + self.rocks + self.enemies + self.bullets + [self.hero]:
+            for obj in self.loot + self.rocks + self.enemies + self.bullets + self.stores + [self.hero]:
                 obj.draw(self.screen, self.camera)
+
+            self.interface.draw()
 
             Enemy.check_spawn(self.enemies)
 

@@ -2,18 +2,23 @@ from settings import pygame
 from colors import *
 
 
-class Sprite:
-    def __init__(self, x, y, speed, radius=20):
+class BaseSprite:
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.speed = speed
-        self.radius = radius
 
     def update(self, keys, world):
         pass
 
     def draw(self, screen, camera):
         pass
+
+
+class Sprite(BaseSprite):
+    def __init__(self, x, y, speed, radius=20):
+        super().__init__(x, y)
+        self.speed = speed
+        self.radius = radius
 
 
 class Creature(Sprite):

@@ -1,9 +1,8 @@
-from classes.creature import Creature
+from classes.creatures.creature import Creature
 from colors import *
 from tools.math_ops import *
 from settings import pygame
-from classes.bullet import Bullet
-from classes.weapons.weapon import Weapon, Drobash
+from classes.weapons.weapon import Drobash
 import classes.loot.loot_types as loot_types
 import time
 
@@ -42,7 +41,6 @@ class Hero(Creature):
                 if loot.type == loot_types.GOLD:
                     self.gold += loot.amount
                     loot.destroy(world)
-                    print(self.gold)
 
     def shoot(self, x, y, bullets):
         self.weapon.shoot(x, y, bullets)

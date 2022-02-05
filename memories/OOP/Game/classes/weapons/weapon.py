@@ -1,5 +1,5 @@
 import time
-from classes.bullet import Bullet
+from classes.creatures.bullet import Bullet
 import random
 
 

@@ -1,7 +1,6 @@
-from classes.creature import Sprite
+from classes.creatures.creature import Sprite
 from colors import *
 import random
-from tools.math_ops import *
 from settings import pygame
 
 

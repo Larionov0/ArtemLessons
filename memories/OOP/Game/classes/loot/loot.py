@@ -1,8 +1,7 @@
-from classes.creature import Sprite
+from classes.creatures.creature import Sprite
 from classes.loot.loot_types import *
 import colors
 import pygame
-import time
 import random
 
 

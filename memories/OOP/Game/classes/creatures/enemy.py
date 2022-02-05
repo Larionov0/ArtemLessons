@@ -1,4 +1,4 @@
-from classes.creature import Creature
+from classes.creatures.creature import Creature
 from colors import *
 import time
 import random
@@ -80,6 +80,7 @@ class Enemy(Creature):
 
     @classmethod
     def check_spawn(cls, enemies):
-        if time.time() - cls.last_spawn_time > cls.respawn_seconds:
-            enemies.append(cls.spawn_random())
-            cls.last_spawn_time = time.time()
+        if len(enemies) < 20:
+            if time.time() - cls.last_spawn_time > cls.respawn_seconds:
+                enemies.append(cls.spawn_random())
+                cls.last_spawn_time = time.time()
