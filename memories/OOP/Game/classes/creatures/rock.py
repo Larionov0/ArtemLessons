@@ -1,7 +1,7 @@
 from classes.creatures.creature import Sprite
 from colors import *
 import random
-from settings import pygame
+from settings import pygame, WORLD_WIDTH, WORLD_HEIGHT
 
 
 class Rock(Sprite):
@@ -18,8 +18,8 @@ class Rock(Sprite):
 
     @classmethod
     def generate_random(cls):
-        return cls(random.randint(-4000, 4000), random.randint(-4000, 4000), radius=random.randint(5, 10))
+        return cls(random.randint(0, WORLD_WIDTH), random.randint(0, WORLD_HEIGHT), radius=random.randint(5, 10))
 
     @classmethod
-    def generate_many_rocks(cls, n=300):
+    def generate_many_rocks(cls, n=200):
         return [cls.generate_random() for _ in range(n)]

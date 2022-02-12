@@ -16,7 +16,8 @@ class World:
     def __init__(self):
         self.hero = Hero('Bob', 5, 150, 150)
         self.camera = Camera(hero=self.hero, width=WIDTH, height=HEIGHT)
-        self.enemies = [Enemy.spawn_random() for _ in range(5)]
+        self.stores = [Store(100, 100)]
+        self.enemies = [Enemy.spawn_random(self) for _ in range(5)]
         self.enemies.append(Rabbit(300, 300, 4, 10))
         self.rocks = Rock.generate_many_rocks()
         self.bullets = []
@@ -24,7 +25,6 @@ class World:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.interface = PlayerInterface(self)
-        self.stores = [Store(100, 100)]
 
     def run(self):
         while True:
@@ -35,13 +35,13 @@ class World:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = self.camera.local_to_global(event.pos)
-                    self.hero.shoot(x, y, self.bullets)
+                    self.hero.shoot(x, y, self)
 
             self.camera.set_mouse_coords(self.camera.local_to_global(pygame.mouse.get_pos()))
 
             keys = pygame.key.get_pressed()
 
-            for obj in self.loot + self.enemies + self.bullets + self.rocks + [self.hero]:
+            for obj in self.loot + self.enemies + self.bullets + self.rocks + self.stores + [self.hero]:
                 obj.update(keys, self)
 
             self.screen.fill(WHITE)
@@ -51,7 +51,7 @@ class World:
 
             self.interface.draw()
 
-            Enemy.check_spawn(self.enemies)
+            Enemy.check_spawn(self)
 
             pygame.display.flip()
             self.clock.tick(60)

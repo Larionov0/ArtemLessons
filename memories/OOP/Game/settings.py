@@ -2,3 +2,6 @@ import pygame
 
 WIDTH = 1530
 HEIGHT = 800
+
+WORLD_WIDTH = 4000
+WORLD_HEIGHT = 4000

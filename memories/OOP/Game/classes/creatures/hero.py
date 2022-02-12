@@ -42,8 +42,15 @@ class Hero(Creature):
                     self.gold += loot.amount
                     loot.destroy(world)
 
-    def shoot(self, x, y, bullets):
-        self.weapon.shoot(x, y, bullets)
+    def shoot(self, x, y, world):
+        is_in_safe = False
+        for store in world.stores:
+            if distance((self.x, self.y), (store.x, store.y)) < store.safe_radius:
+                is_in_safe = True
+                break
+
+        if not is_in_safe:
+            self.weapon.shoot(x, y, world.bullets)
 
     def draw(self, screen, camera):
         pygame.draw.circle(screen, self.color, camera.calc_coords([self.x, self.y]), self.radius)

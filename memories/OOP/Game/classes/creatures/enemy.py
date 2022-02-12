@@ -2,9 +2,8 @@ from classes.creatures.creature import Creature
 from colors import *
 import time
 import random
-from settings import WIDTH, HEIGHT
 from tools.math_ops import *
-from settings import pygame
+from settings import *
 from classes.loot.loot import Loot
 from classes.loot.loot_types import *
 
@@ -63,8 +62,18 @@ class Enemy(Creature):
         self.draw_hp_bar(screen, camera)
 
     @classmethod
-    def spawn_random(cls):
-        return cls(random.randint(0, WIDTH), random.randint(0, HEIGHT), random.randint(1, 3),
+    def spawn_random(cls, world):
+        while True:
+            x, y = random.randint(0, WORLD_WIDTH), random.randint(0, WORLD_HEIGHT)
+            ok = True
+            for store in world.stores:
+                if distance((x, y), (store.x, store.y)) < store.safe_radius:
+                    ok = False
+                    break
+            if ok:
+                break
+
+        return cls(x, y, random.randint(1, 3),
                    vision_range=random.randint(150, 250),
                    radius=random.randint(15, 25),
                    color=(random.randint(200, 255), random.randint(0, 100), random.randint(0, 100)))
@@ -79,8 +88,9 @@ class Enemy(Creature):
         world.enemies.remove(self)
 
     @classmethod
-    def check_spawn(cls, enemies):
+    def check_spawn(cls, world):
+        enemies = world.enemies
         if len(enemies) < 20:
             if time.time() - cls.last_spawn_time > cls.respawn_seconds:
-                enemies.append(cls.spawn_random())
+                enemies.append(cls.spawn_random(world))
                 cls.last_spawn_time = time.time()
