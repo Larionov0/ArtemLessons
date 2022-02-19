@@ -7,11 +7,8 @@ import time
 
 class Bullet(Sprite):
     def __init__(self, x, y, speed, vector, damage=5, color=BLACK, radius=3):
-        self.x = x
-        self.y = y
-        self.speed = speed
+        super().__init__(x, y, speed, radius)
         self.color = color
-        self.radius = radius
         self.vector = vector
         self.damage = damage
         self.start_time = time.time()

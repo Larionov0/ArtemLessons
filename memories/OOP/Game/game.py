@@ -7,7 +7,7 @@ from classes.camera import Camera
 from classes.creatures.rock import Rock
 from settings import WIDTH, HEIGHT
 from classes.player_interface import PlayerInterface
-from classes.creatures.store import Store
+from classes.creatures.store.store import Store
 
 pygame.init()
 

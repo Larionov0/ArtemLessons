@@ -5,6 +5,7 @@ from settings import pygame
 from classes.weapons.weapon import Drobash
 import classes.loot.loot_types as loot_types
 import time
+from classes.creatures.store.store1 import Dvoostvolka, AutomatBobby
 
 
 class Hero(Creature):
@@ -12,7 +13,7 @@ class Hero(Creature):
         super().__init__(x, y, speed, hp, radius)
         self.name = name
         self.color = color
-        self.weapon = Drobash(self)
+        self.weapon = Drobash(self, )
         self.gold = 50
 
     def update(self, keys, world):
